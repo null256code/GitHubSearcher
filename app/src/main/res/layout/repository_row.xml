@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:id="@+id/ownerAvatar"
+            android:layout_weight="1" />
+
+        <TextView
+            android:text="UserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ownerLogin" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="20dp">
+
+        <TextView
+            android:text="http://..."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/repositoryURL" />
+
+        <TextView
+            android:text="Java"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/language" />
+
+        <TextView
+            android:text="testです"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/description" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
