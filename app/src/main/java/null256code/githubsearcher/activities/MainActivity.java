@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,14 +30,14 @@ import null256code.githubsearcher.network.SearchRepositoryAsyncTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    private boolean sendRequest = false;
+    private boolean loadRepository = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button = (Button) findViewById(R.id.button);
+        Button button = (Button) findViewById(R.id.searchButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,51 +58,76 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 Log.d("Form", "▼フォーム値");
                 Log.d("Form", editable.toString());
-                SearchRepositoryAsyncTask task = new SearchRepositoryAsyncTask(
-                        new SearchRepositoryAsyncTask.AsyncCallback() {
-                            public void preExecute() {}
-                            public void progressUpdate(int progress) {}
-                            public void postExecute(JSONObject result) {
-                                if(result == null) {
-                                    return; //JSON取得失敗
-                                }
-                                try {
-                                    boolean incomplete = result.getBoolean(SearchRepositoryAsyncTask.JSON_KEY_INCOMPLETE_RESULT);
-                                    if(incomplete) {
-                                        return; //検索失敗(GitHub側)
-                                    }
-                                    Integer totalCount = result.getInt(SearchRepositoryAsyncTask.JSON_KEY_TOTAL_COUNT);
-                                    JSONArray items = result.getJSONArray(SearchRepositoryAsyncTask.JSON_KEY_ITEMS); //検索結果の配列
-                                    ArrayList<RepositoryInfo> list = new ArrayList<>();
-                                    for (int i = 0; i < items.length(); i++) {
-                                        JSONObject item = items.getJSONObject(i);
-                                        RepositoryInfo info = new RepositoryInfo();
-                                        info.setId(item.getInt(SearchRepositoryAsyncTask.JSON_KEY_ID));
-
-                                        JSONObject owner = item.getJSONObject(SearchRepositoryAsyncTask.JSON_KEY_OWNER);
-                                        info.setOwnerLogin(owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_LOGIN));
-                                        String avatarURL = owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_AVATAR);
-
-                                        info.setHtmlURL(item.getString(SearchRepositoryAsyncTask.JSON_KEY_HTML_URL));
-                                        info.setDescription(item.getString(SearchRepositoryAsyncTask.JSON_KEY_DESCRIPTION));
-                                        info.setLanguage(item.getString(SearchRepositoryAsyncTask.JSON_KEY_LANGUAGE));
-                                        list.add(info);
-                                    }
-                                    // ListView 用のアダプタを作成
-                                    RepositoryInfoAdapter adapter = new RepositoryInfoAdapter(MainActivity.this);
-                                    adapter.setRepositoryList(list);
-                                    // ListView にアダプタをセット
-                                    ListView listView = (ListView)findViewById(R.id.resultList);
-                                    listView.setAdapter(adapter);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                if(loadRepository) {
+                    return; //処理中はテキストが変わっても何もしない。
+                } else if (editable.length() == 0) {
+                    return; //テキストが空っぽのときも何もしない。
+                } else {
+                    //▼変換前判定
+                    boolean unfixed = false;
+                    Object[] spanned = editable.getSpans(0, editable.length(), Object.class);
+                    if (spanned != null) {
+                        for (Object obj : spanned) {
+                            // UnderlineSpan での判定から getSpanFlags への判定に変更。
+                            // if (obj instanceof android.text.style.UnderlineSpan) {
+                            if ((editable.getSpanFlags(obj) & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING) {
+                                unfixed = true;
+                                break;
                             }
-                            public void cancel() {}
+                        }
+                    }
+                    Log.d("変換前", String.valueOf(unfixed));
+                    if(unfixed) {
+                        return; //変換前ならば、何もしない
+                    }
 
-                });
-                task.updateSearchCondition(editable.toString(), "", "");
-                task.execute();
+                    loadRepository = true;
+                    SearchRepositoryAsyncTask task = new SearchRepositoryAsyncTask(
+                            new SearchRepositoryAsyncTask.AsyncCallback() {
+                                public void preExecute() {}
+                                public void progressUpdate(int progress) {}
+                                public void postExecute(JSONObject result) {
+                                    if(result == null) {
+                                        return; //JSON取得失敗
+                                    }
+                                    try {
+                                        boolean incomplete = result.getBoolean(SearchRepositoryAsyncTask.JSON_KEY_INCOMPLETE_RESULT);
+                                        if(incomplete) {
+                                            return; //検索失敗(GitHub側)
+                                        }
+                                        Integer totalCount = result.getInt(SearchRepositoryAsyncTask.JSON_KEY_TOTAL_COUNT);
+                                        JSONArray items = result.getJSONArray(SearchRepositoryAsyncTask.JSON_KEY_ITEMS); //検索結果の配列
+                                        ArrayList<RepositoryInfo> list = new ArrayList<>();
+                                        for (int i = 0; i < items.length(); i++) {
+                                            JSONObject item = items.getJSONObject(i);
+                                            RepositoryInfo info = new RepositoryInfo();
+                                            info.setId(item.getInt(SearchRepositoryAsyncTask.JSON_KEY_ID));
+
+                                            JSONObject owner = item.getJSONObject(SearchRepositoryAsyncTask.JSON_KEY_OWNER);
+                                            info.setOwnerLogin(owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_LOGIN));
+                                            String avatarURL = owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_AVATAR);
+
+                                            info.setHtmlURL(item.getString(SearchRepositoryAsyncTask.JSON_KEY_HTML_URL));
+                                            info.setDescription(item.getString(SearchRepositoryAsyncTask.JSON_KEY_DESCRIPTION));
+                                            info.setLanguage(item.getString(SearchRepositoryAsyncTask.JSON_KEY_LANGUAGE));
+                                            list.add(info);
+                                        }
+                                        // ListView 用のアダプタを作成
+                                        RepositoryInfoAdapter adapter = new RepositoryInfoAdapter(MainActivity.this);
+                                        adapter.setRepositoryList(list);
+                                        // ListView にアダプタをセット
+                                        ListView listView = (ListView)findViewById(R.id.resultList);
+                                        listView.setAdapter(adapter);
+                                        loadRepository = false;
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                public void cancel() {}
+                            });
+                    task.updateSearchCondition(editable.toString(), "", "");
+                    task.execute();
+                }
             }
         });
     }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -12,26 +13,87 @@
         android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/formArea">
+        android:id="@+id/formArea"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
-        <EditText
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:ems="12"
+                android:layout_marginEnd="10dp"
+                android:id="@+id/keywordForm"
+                android:hint="キーワードを入力" />
+
+            <Button
+                android:text="検索"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:layout_centerVertical="true"
+                android:drawableLeft="?android:attr/actionModeWebSearchDrawable"
+                android:id="@+id/searchButton" />
+
+        </RelativeLayout>
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:ems="10"
-            android:layout_marginEnd="10dp"
-            android:id="@+id/keywordForm"
-            android:hint="リポジトリ名を入力" />
+            android:textSize="14sp"
+            android:text="sort by"/>
 
-        <Button
-            android:text="GET"
+        <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button"
-            android:layout_below="@+id/editText"
-            android:layout_alignParentStart="true" />
+            android:orientation="horizontal"
+            android:id="@+id/sortSelect">
+
+            <RadioButton
+                android:text="stars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/sortStarRadio" />
+
+            <RadioButton
+                android:text="forks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/sortForkRadio" />
+
+            <RadioButton
+                android:text="updated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/sortUpdateRadio" />
+
+            <RadioButton
+                android:text="nothing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/sortNothingRadio"
+                android:checked="true" />
+
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="order"/>
+
+        <CheckBox
+            android:text="desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/orderCheck" />
 
     </LinearLayout>
 
@@ -44,10 +106,9 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
             android:id="@+id/resultList" />
 
     </LinearLayout>
-
-
 
 </RelativeLayout>
