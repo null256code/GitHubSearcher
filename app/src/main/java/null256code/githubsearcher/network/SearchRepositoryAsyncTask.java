@@ -15,9 +15,9 @@ import okhttp3.Response;
 
 /**
  * GitHubのAPIサーバからリポジトリ情報を検索する。
+ * URLやJSONのキーもここに定数として定義しておく。
  * Created by kanto on 2016/11/18.
  */
-
 public class SearchRepositoryAsyncTask extends AsyncTask<String, Integer, JSONObject> {
 
     private static final String API_SERVER_URL = "https://api.github.com/";
@@ -28,6 +28,7 @@ public class SearchRepositoryAsyncTask extends AsyncTask<String, Integer, JSONOb
     public static final String JSON_KEY_TOTAL_COUNT = "total_count";
     public static final String JSON_KEY_ITEMS = "items";
     public static final String JSON_KEY_ID = "id";
+    public static final String JSON_KEY_FULL_NAME = "full_name";
     public static final String JSON_KEY_OWNER = "owner";
     public static final String JSON_KEY_OWNER_LOGIN = "login";
     public static final String JSON_KEY_OWNER_AVATAR = "avatar_url";

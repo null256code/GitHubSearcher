@@ -30,6 +30,12 @@ import java.util.Map;
 import null256code.githubsearcher.R;
 import null256code.githubsearcher.network.SearchRepositoryAsyncTask;
 
+/**
+ * 唯一のActivity、AsyncTaskのCallback用の外部クラスもあります。
+ * ガッツリActivityに全部書きましたが、
+ * 本当はFragmentとかで分けるべきですよね。。
+ * Created by kanto on 2016/11/20.
+ */
 public class MainActivity extends AppCompatActivity {
 
     static boolean sLoadRepository = false; //リポジトリ読み込み中フラグ
@@ -99,24 +105,20 @@ public class MainActivity extends AppCompatActivity {
                 } else if (editable.length() == 0) {
                     return; //テキストが空っぽのときも何もしない。
                 } else {
-                    //▼変換前判定
+                    //変換前判定
                     boolean unfixed = false;
                     Object[] spanned = editable.getSpans(0, editable.length(), Object.class);
                     if (spanned != null) {
                         for (Object obj : spanned) {
-                            // UnderlineSpan での判定から getSpanFlags への判定に変更。
-                            // if (obj instanceof android.text.style.UnderlineSpan) {
                             if ((editable.getSpanFlags(obj) & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING) {
                                 unfixed = true;
                                 break;
                             }
                         }
                     }
-                    Log.d("変換前", String.valueOf(unfixed));
-                    if(unfixed) {
-                        return; //変換前ならば、何もしない
+                    if(!unfixed) {
+                        loadRepositoryAsync(); //入力文字が確定しているのみ実行
                     }
-                    loadRepositoryAsync();
                 }
             }
         });
@@ -155,14 +157,14 @@ class SearchRepositoryCallBackTask implements SearchRepositoryAsyncTask.AsyncCal
                 JSONObject item = items.getJSONObject(i);
                 RepositoryInfo info = new RepositoryInfo();
                 info.setId(item.getInt(SearchRepositoryAsyncTask.JSON_KEY_ID));
-
-                JSONObject owner = item.getJSONObject(SearchRepositoryAsyncTask.JSON_KEY_OWNER);
-                info.setOwnerLogin(owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_LOGIN));
-                String avatarURL = owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_AVATAR);
-
+                info.setFullName(item.getString(SearchRepositoryAsyncTask.JSON_KEY_FULL_NAME));
                 info.setHtmlURL(item.getString(SearchRepositoryAsyncTask.JSON_KEY_HTML_URL));
                 info.setDescription(item.getString(SearchRepositoryAsyncTask.JSON_KEY_DESCRIPTION));
                 info.setLanguage(item.getString(SearchRepositoryAsyncTask.JSON_KEY_LANGUAGE));
+
+                JSONObject owner = item.getJSONObject(SearchRepositoryAsyncTask.JSON_KEY_OWNER);
+                info.setOwnerLogin(owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_LOGIN));
+                info.setOwnerImgUrl(owner.getString(SearchRepositoryAsyncTask.JSON_KEY_OWNER_AVATAR));
                 list.add(info);
             }
 
@@ -184,8 +186,7 @@ class SearchRepositoryCallBackTask implements SearchRepositoryAsyncTask.AsyncCal
                 }
             });
 
-            //データ読み込み中フラグをfalseにする
-            MainActivity.sLoadRepository = false;
+            MainActivity.sLoadRepository = false; //データ読み込み中フラグをfalseにする
         } catch (JSONException e) {
             e.printStackTrace();
         }

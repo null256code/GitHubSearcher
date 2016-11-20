@@ -1,16 +1,16 @@
 package null256code.githubsearcher.activities;
 
-import android.graphics.Bitmap;
-
 /**
+ * リポジトリ情報のPOJO
+ * ListViewで表示するときに使う
  * Created by kanto on 2016/11/20.
  */
-
 public class RepositoryInfo {
 
     private Integer id;
+    private String fullName;
     private String ownerLogin;
-    private Bitmap ownerImg;
+    private String ownerImgUrl;
     private String htmlURL;
     private String description;
     private String language;
@@ -23,6 +23,14 @@ public class RepositoryInfo {
         this.id = id;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public String getOwnerLogin() {
         return ownerLogin;
     }
@@ -31,12 +39,12 @@ public class RepositoryInfo {
         this.ownerLogin = ownerLogin;
     }
 
-    public Bitmap getOwnerImg() {
-        return ownerImg;
+    public String getOwnerImgUrl() {
+        return ownerImgUrl;
     }
 
-    public void setOwnerImg(Bitmap ownerImg) {
-        this.ownerImg = ownerImg;
+    public void setOwnerImgUrl(String ownerImgUrl) {
+        this.ownerImgUrl = ownerImgUrl;
     }
 
     public String getHtmlURL() {
@@ -62,4 +70,5 @@ public class RepositoryInfo {
     public void setLanguage(String language) {
         this.language = language;
     }
+
 }
