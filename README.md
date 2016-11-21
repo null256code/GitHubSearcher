@@ -6,7 +6,7 @@ GitHub/repository search APIの練習アプリ
 ▼APK  
 <https://github.com/null256code/GitHubSearcher/blob/master/doc/GitHubSearcher-debug.apk>
 
-▼画面のキャプチャ
+▼画面のキャプチャ  
 <img src="https://raw.githubusercontent.com/null256code/GitHubSearcher/master/doc/capture.png" height="400" />  
 
 ▼使用した外部ライブラリ  
